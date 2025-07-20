@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import user_passes_test, permission_required
 from .models import Library
 from .models import Book, UserProfile 
 from .forms import BookForm
+from django.contrib.auth.forms import UserCreationForm
 
 
 # Book list
