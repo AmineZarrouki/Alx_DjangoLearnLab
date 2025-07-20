@@ -14,7 +14,7 @@ def get_librarian_for_library(library_name):
 
 # Alternative implementations
 def get_librarian_for_library_direct(library_name):
-    return Librarian.objects.get(library__name=library_name)
+    return Librarian.objects.get(library__name=library_name)    
 
 def get_libraries_with_book(book_title):
     return Library.objects.filter(books__title=book_title)
