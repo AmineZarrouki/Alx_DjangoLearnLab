@@ -4,7 +4,7 @@ from .models import Book, Library
 
 # Function-based view to list all books
 def list_books(request):
-    books = Book.objects.select_related('author').all()
+    books = Book.objects.all()  # Exact requested query
     return render(request, 'relationship_app/list_books.html', {'books': books})
 
 # Class-based view to show library details
@@ -15,6 +15,5 @@ class LibraryDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Prefetch related books with their authors
-        context['library'].books.prefetch_related('author')
+        context['books'] = self.object.books.all()  # Get all books for the library
         return context
