@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import user_passes_test, permission_required
 from .models import Library
 from .models import Book, UserProfile 
 from .forms import BookForm
+from .views import list_books
 
 # Book list
 def list_books(request):
