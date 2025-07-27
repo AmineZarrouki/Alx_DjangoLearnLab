@@ -1,39 +1,33 @@
-from django.contrib.auth.decorators import permission_required, login_required
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse
 from .models import Book
+from .forms import BookForm
+from django.db.models import Q
 
-@login_required
+def index(request):
+	return HttpResponse("Welcome to my book store.")
+
+
 @permission_required('bookshelf.can_view', raise_exception=True)
-def list_books(request):
+def book_list(request):
+    query = request.GET.get('q')
     books = Book.objects.all()
+    if query:
+        # Safe query using ORM (no raw SQL or string interpolation)
+        books = books.filter(Q(title__icontains=query) | Q(author__icontains=query))
     return render(request, 'bookshelf/book_list.html', {'books': books})
 
-@login_required
 @permission_required('bookshelf.can_create', raise_exception=True)
-def create_book(request):
+def book_create(request):
     if request.method == 'POST':
-        title = request.POST.get('title')
-        author = request.POST.get('author')
-        year = request.POST.get('year')
-        Book.objects.create(title=title, author=author, publication_year=year)
-        return redirect('list_books')
-    return render(request, 'bookshelf/book_form.html')
+        form = BookForm(request.POST)
+        if form.is_valid():  # Ensures data is validated and sanitized
+            form.save()
+    else:
+        form = BookForm()
+    return render(request, 'bookshelf/form_example.html', {'form': form})
 
-@login_required
-@permission_required('bookshelf.can_edit', raise_exception=True)
-def edit_book(request, book_id):
-    book = get_object_or_404(Book, id=book_id)
-    if request.method == 'POST':
-        book.title = request.POST.get('title')
-        book.author = request.POST.get('author')
-        book.publication_year = request.POST.get('year')
-        book.save()
-        return redirect('list_books')
-    return render(request, 'bookshelf/book_form.html', {'book': book})
-
-@login_required
-@permission_required('bookshelf.can_delete', raise_exception=True)
-def delete_book(request, book_id):
-    book = get_object_or_404(Book, id=book_id)
-    book.delete()
-    return redirect('list_books')
+from .forms import ExampleForm
+def example_view(request):
+    form = ExampleForm()
+    return render(request, 'form_example.html', {'form': form})

@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ia4^%hg-wj520bmpp-9n3$1l+hkd8nn$z&1+klo0fqreln%134'
+SECRET_KEY = 'django-insecure-hy65%lgdod1cm^$3u0xv#!7n+e@o87lhtiiousk_%@u3$6_dip'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -32,13 +32,14 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'relationship_app',
-    'bookshelf',
+    'bookshelf.apps.BookshelfConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.db.models.BigAutoField',
 ]
 
 MIDDLEWARE = [
@@ -50,13 +51,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ROOT_URLCONF = 'LibraryProject.urls'
 
 TEMPLATES = [
     {
+        'DIRS': [BASE_DIR / 'relationship_app/templates'],
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -122,7 +124,86 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-LOGIN_REDIRECT_URL = 'list_books'   # After login, go to the book list page
-LOGOUT_REDIRECT_URL = 'login'       # After logout, go back to login page
 
+LOGIN_REDIRECT_URL = 'list_books'
+LOGOUT_REDIRECT_URL = 'login'
+
+import os
+TEMPLATES[0]['DIRS'] = [os.path.join(BASE_DIR, 'relationship_app/templates')]
+
+# advanced_features_and_security/settings.py
+
+# Add to existing settings
+AUTH_USER_MODEL = 'accounts.CustomUser'
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
+
+
+# Media handling (for profile_photo)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+
+
+
+# SECURITY SETTINGS
+
+DEBUG = False  # NEVER use True in production
+
+ALLOWED_HOSTS = ['yourdomain.com', '127.0.0.1']
+
+# Prevent MIME-sniffing
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Activate browser’s XSS filter
+SECURE_BROWSER_XSS_FILTER = True
+
+# Prevent clickjacking
+X_FRAME_OPTIONS = 'DENY'
+
+# Enforce HTTPS for cookies
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+# Optional: Use secure HSTS header (HTTP Strict Transport Security)
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Optional CSP middleware (see Step 4)
+INSTALLED_APPS += ['csp']
+MIDDLEWARE += ['csp.middleware.CSPMiddleware']
+
+# CSP basic setup (can be customized further)
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'",)
+CSP_FONT_SRC = ("'self'",)
+CSP_IMG_SRC = ("'self'",)
+
+# === HTTPS & SSL CONFIGURATION ===
+
+# Redirect all HTTP requests to HTTPS
+SECURE_SSL_REDIRECT = True  # 🔐 Forces HTTPS
+
+# Enable HTTP Strict Transport Security (HSTS)
+SECURE_HSTS_SECONDS = 31536000  # 🔐 One year in seconds
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # 🔐 Include subdomains
+SECURE_HSTS_PRELOAD = True  # 🔐 Preload into browsers' HSTS lists
+
+# === Secure Cookie Settings ===
+
+# Ensures cookies are only transmitted via HTTPS
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+
+# === Secure Headers ===
+
+X_FRAME_OPTIONS = 'DENY'  # Prevents clickjacking by disallowing iframe embedding
+
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Stops MIME-type sniffing
+SECURE_BROWSER_XSS_FILTER = True  # Activates XSS protection in modern browsers
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+

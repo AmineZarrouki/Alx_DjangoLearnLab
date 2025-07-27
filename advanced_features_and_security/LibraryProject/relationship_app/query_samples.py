@@ -1,22 +1,22 @@
-from relationship_app.models import Author, Book, Library, Librarian
+from relationship_app.models import Book, Author
 
-def get_books_by_author(author_name):
-    try:
-        author = Author.objects.get(name=author_name)
-        return Book.objects.filter(author=author)
-    except Author.DoesNotExist:
-        return []
+# Replace 'author_name' with the actual name of the author you want to query
+author_name = "John Doe"
+author = Author.objects.get(name=author_name)
+books_by_author = Book.objects.filter(author=author)
 
-def get_books_in_library(library_name):
-    try:
-        library = Library.objects.get(name=library_name)
-        return library.books.all()
-    except Library.DoesNotExist:
-        return []
+print("Books by", author_name, ":", [book.title for book in books_by_author])
 
-def get_librarian_for_library(library_name):
-    try:
-        library = Library.objects.get(name=library_name)
-        return Librarian.objects.get(library=library)
-    except (Library.DoesNotExist, Librarian.DoesNotExist):
-        return None
+from relationship_app.models import Library, Librarian
+
+# Replace 'library_name' with the actual name of the library you want to query
+library_name = "Central Library"
+library = Library.objects.get(name=library_name)
+librarian = Librarian.objects.get(library=library)
+
+print("Librarian for", library_name, ":", librarian.name)
+
+# Assuming 'library_name' is already defined above
+books_in_library = library.books.all()
+
+print("Books in", library_name, ":", [book.title for book in books_in_library])
